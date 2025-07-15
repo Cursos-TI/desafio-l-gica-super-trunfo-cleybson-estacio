@@ -175,7 +175,7 @@ int main()
   case 6:
     compararCartas(cidade1, estado1, densidade1,
                    cidade2, estado2, densidade2,
-                   "Densidade Populacional (menor vence)", 1);
+                   "Densidade Populacional", 1);
     break;
   case 7:
     compararCartas(cidade1, estado1, superPoder1,
