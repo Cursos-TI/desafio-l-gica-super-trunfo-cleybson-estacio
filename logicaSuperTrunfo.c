@@ -1,33 +1,70 @@
 #include <stdio.h>
 #include <string.h>
 
+// Função para exibir o menu e retornar a escolha
+int exibirMenu()
+{
+  int opcao;
+  printf("\n=== MENU DE COMPARAÇÃO DE CARTAS ===\n");
+  printf("1 - População\n");
+  printf("2 - Área\n");
+  printf("3 - PIB\n");
+  printf("4 - Pontos Turísticos\n");
+  printf("5 - PIB per capita\n");
+  printf("6 - Densidade Populacional (menor vence)\n");
+  printf("7 - Super Poder (soma dos atributos)\n");
+  printf("Escolha o atributo para comparar (1 a 7): ");
+  scanf("%d", &opcao);
+  return opcao;
+}
+
 // Função de comparação entre as cartas
-// Quando o atributo for densidade, será passado 1/densidade, entao quanto maior o numero, menor o resultado da divisao
+// Quando o atributo for densidade, será passado 1/densidade, então quanto maior o número, menor a densidade original
 void compararCartas(
     char cidade1[], char estado1[], float valor1,
     char cidade2[], char estado2[], float valor2,
-    char atributo[])
+    char atributo[], short int inverso)
 {
   printf("\nComparação de cartas (Atributo: %s):\n\n", atributo);
   printf("Carta 1 - %s (%s): %.2f\n", cidade1, estado1, valor1);
   printf("Carta 2 - %s (%s): %.2f\n", cidade2, estado2, valor2);
 
-  if (valor1 > valor2)
+  if (inverso)
   {
-    printf("\nResultado: Carta 1 (%s) venceu!\n", cidade1);
-  }
-  else if (valor2 > valor1)
-  {
-    printf("\nResultado: Carta 2 (%s) venceu!\n", cidade2);
+    if (valor1 < valor2)
+    {
+      printf("\nResultado: Carta 1 (%s) venceu!\n", cidade1);
+    }
+    else if (valor2 < valor1)
+    {
+      printf("\nResultado: Carta 2 (%s) venceu!\n", cidade2);
+    }
+    else
+    {
+      printf("\nResultado: Empate!\n");
+    }
   }
   else
   {
-    printf("\nResultado: Empate!\n");
+    if (valor1 > valor2)
+    {
+      printf("\nResultado: Carta 1 (%s) venceu!\n", cidade1);
+    }
+    else if (valor2 > valor1)
+    {
+      printf("\nResultado: Carta 2 (%s) venceu!\n", cidade2);
+    }
+    else
+    {
+      printf("\nResultado: Empate!\n");
+    }
   }
 }
 
-float calcSuperPoder(unsigned long int populacao, float area, float pib, int qtdTurismo, float pibPerCapita, float densidadeP) {
-  return (float) populacao + area + pib + qtdTurismo + pibPerCapita + densidadeP;
+// Função que calcula o "super poder" da carta
+float calcSuperPoder(unsigned long int populacao, float area, float pib, int qtdTurismo, float pibPerCapita, float inversoDensidade)
+{
+  return (float)populacao + area + pib + qtdTurismo + pibPerCapita - inversoDensidade;
 }
 
 int main()
@@ -73,7 +110,7 @@ int main()
   // Cálculos carta 1
   densidade1 = populacao1 / area1;
   pibPerCapita1 = pib1 / populacao1;
-  superPoder1 = calcSuperPoder(populacao1, area1, pib1, pontosTuristicos1, pibPerCapita1, 1/densidade1);
+  superPoder1 = calcSuperPoder(populacao1, area1, pib1, pontosTuristicos1, pibPerCapita1, densidade1);
 
   // Entrada dos dados da carta 2
   printf("\nDigite os dados da Carta 2:\n");
@@ -102,15 +139,53 @@ int main()
   // Cálculos carta 2
   densidade2 = populacao2 / area2;
   pibPerCapita2 = pib2 / populacao2;
-  superPoder2 = calcSuperPoder(populacao2, area2, pib2, pontosTuristicos2, pibPerCapita2, 1/densidade2);
+  superPoder2 = calcSuperPoder(populacao2, area2, pib2, pontosTuristicos2, pibPerCapita2, densidade2);
 
-  // Atributo escolhido para comparação
-  char atributoEscolhido[] = "populacao2";
+  // Obtenção da escolha do usuário
+  int opcao = exibirMenu();
 
-  // Chamada da função para comparar
-  compararCartas(cidade1, estado1, populacao1,
-                 cidade2, estado2, populacao2,
-                 atributoEscolhido);
+  // Processamento conforme opção
+  switch (opcao)
+  {
+  case 1:
+    compararCartas(cidade1, estado1, (float)populacao1,
+                   cidade2, estado2, (float)populacao2,
+                   "População", 0);
+    break;
+  case 2:
+    compararCartas(cidade1, estado1, area1,
+                   cidade2, estado2, area2,
+                   "Área", 0);
+    break;
+  case 3:
+    compararCartas(cidade1, estado1, pib1,
+                   cidade2, estado2, pib2,
+                   "PIB", 0);
+    break;
+  case 4:
+    compararCartas(cidade1, estado1, (float)pontosTuristicos1,
+                   cidade2, estado2, (float)pontosTuristicos2,
+                   "Pontos Turísticos", 0);
+    break;
+  case 5:
+    compararCartas(cidade1, estado1, pibPerCapita1,
+                   cidade2, estado2, pibPerCapita2,
+                   "PIB per capita", 0);
+    break;
+  case 6:
+    compararCartas(cidade1, estado1, densidade1,
+                   cidade2, estado2, densidade2,
+                   "Densidade Populacional (menor vence)", 1);
+    break;
+  case 7:
+    compararCartas(cidade1, estado1, superPoder1,
+                   cidade2, estado2, superPoder2,
+                   "Super Poder", 0);
+    break;
+  default:
+    printf("\nOpção inválida! Encerrando o programa.\n");
+    break;
+  }
 
   return 0;
 }
